@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Kai's Coconut Catcher - Retro Arcade Edition</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
@@ -14,6 +14,9 @@
             image-rendering: pixelated;
             image-rendering: -moz-crisp-edges;
             image-rendering: crisp-edges;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
         
         body {
@@ -24,16 +27,36 @@
             align-items: center;
             min-height: 100vh;
             overflow: hidden;
+            touch-action: none;
         }
         
         #gameContainer {
             position: relative;
-            width: 800px;
-            height: 600px;
+            width: 100%;
+            max-width: 800px;
+            height: 100vh;
+            max-height: 600px;
             background: #000;
             border: 4px solid #333;
             box-shadow: 0 0 50px rgba(0, 255, 255, 0.5);
             overflow: hidden;
+        }
+        
+        /* Mobile specific container */
+        @media (max-width: 768px) {
+            body {
+                margin: 0;
+                padding: 0;
+            }
+            
+            #gameContainer {
+                width: 100vw;
+                height: 100vh;
+                max-width: none;
+                max-height: none;
+                border: none;
+                border-radius: 0;
+            }
         }
         
         #startScreen, #gameOverScreen, #prizeScreen, #transitionScreen {
@@ -54,7 +77,7 @@
         }
         
         h1 {
-            font-size: 24px;
+            font-size: clamp(16px, 4vw, 24px);
             color: #ff0;
             text-shadow: 2px 2px 0 #f00;
             margin-bottom: 2rem;
@@ -67,14 +90,14 @@
         }
         
         .subtitle {
-            font-size: 16px;
+            font-size: clamp(12px, 3vw, 16px);
             color: #fff;
             margin-bottom: 1rem;
             line-height: 1.5;
         }
         
         p {
-            font-size: 10px;
+            font-size: clamp(8px, 2vw, 10px);
             color: #0ff;
             line-height: 1.8;
             max-width: 600px;
@@ -87,17 +110,13 @@
             border: none;
             padding: 15px 30px;
             font-family: 'Press Start 2P', monospace;
-            font-size: 12px;
+            font-size: clamp(10px, 2.5vw, 12px);
             cursor: pointer;
             position: relative;
             text-transform: uppercase;
             transition: all 0.1s;
             box-shadow: 4px 4px 0 #800;
-        }
-        
-        .btn:hover {
-            transform: translate(2px, 2px);
-            box-shadow: 2px 2px 0 #800;
+            -webkit-tap-highlight-color: transparent;
         }
         
         .btn:active {
@@ -126,7 +145,7 @@
             left: 20px;
             color: #fff;
             z-index: 50;
-            font-size: 12px;
+            font-size: clamp(10px, 2.5vw, 12px);
             line-height: 1.8;
         }
         
@@ -150,10 +169,56 @@
             top: 20px;
             right: 20px;
             color: #0f0;
-            font-size: 12px;
+            font-size: clamp(10px, 2.5vw, 12px);
             z-index: 50;
             text-shadow: 1px 1px 0 #000;
         }
+        
+        /* Mobile controls */
+        #mobileControls {
+            display: none;
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 90;
+            opacity: 0.3;
+        }
+        
+        @media (max-width: 768px) {
+            #mobileControls {
+                display: block;
+            }
+        }
+        
+        .control-pad {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+        
+        .control-btn {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.5);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: #fff;
+        }
+        
+        .control-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+        }
+        
+        .control-up { top: 0; left: 50px; }
+        .control-down { bottom: 0; left: 50px; }
+        .control-left { left: 0; top: 50px; }
+        .control-right { right: 0; top: 50px; }
         
         .message {
             position: absolute;
@@ -161,7 +226,7 @@
             left: 50%;
             transform: translate(-50%, -50%);
             color: #ff0;
-            font-size: 20px;
+            font-size: clamp(16px, 4vw, 20px);
             text-shadow: 2px 2px 0 #000;
             z-index: 60;
             animation: messagePopup 2s ease-out;
@@ -191,28 +256,18 @@
             font-size: 10px;
         }
         
-        #prizeForm input:focus {
-            outline: none;
-            box-shadow: 0 0 10px #0ff;
-        }
-        
         .arcade-text {
             color: #f0f;
-            font-size: 14px;
+            font-size: clamp(12px, 3vw, 14px);
             margin: 1rem 0;
         }
         
-        @media (max-width: 850px) {
-            #gameContainer {
-                width: 90vw;
-                height: 70vh;
-                max-width: 600px;
-                max-height: 450px;
+        /* Legend styling for mobile */
+        @media (max-width: 768px) {
+            #startScreen > div {
+                transform: scale(0.8);
+                margin: 10px 0;
             }
-            
-            h1 { font-size: 18px; }
-            p { font-size: 8px; }
-            .btn { font-size: 10px; padding: 12px 24px; }
         }
     </style>
 </head>
@@ -223,10 +278,10 @@
             <h1>KAI'S COCONUT CATCHER</h1>
             <p class="subtitle">RETRO ARCADE EDITION</p>
             
-            <div style="display: flex; gap: 40px; margin: 20px 0; justify-content: center; flex-wrap: wrap;">
+            <div style="display: flex; gap: 20px; margin: 10px 0; justify-content: center; flex-wrap: wrap;">
                 <div style="text-align: left;">
-                    <p style="color: #0f0; font-size: 12px; margin-bottom: 15px;">COLLECT:</p>
-                    <p style="color: #fff; font-size: 10px; line-height: 2;">
+                    <p style="color: #0f0; font-size: clamp(10px, 2.5vw, 12px); margin-bottom: 15px;">COLLECT:</p>
+                    <p style="color: #fff; font-size: clamp(8px, 2vw, 10px); line-height: 2;">
                         🥥 COCONUT = 50 PTS<br>
                         ✨ POWER COCONUT = 200 PTS<br>
                         🐟 AHI TUNA = 300 PTS<br>
@@ -237,26 +292,26 @@
                 </div>
                 
                 <div style="text-align: left;">
-                    <p style="color: #f00; font-size: 12px; margin-bottom: 15px;">AVOID:</p>
-                    <p style="color: #fff; font-size: 10px; line-height: 2;">
+                    <p style="color: #f00; font-size: clamp(10px, 2.5vw, 12px); margin-bottom: 15px;">AVOID:</p>
+                    <p style="color: #fff; font-size: clamp(8px, 2vw, 10px); line-height: 2;">
                         🐓 CHICKEN = -50 PTS<br>
                         🧳 TOURIST = -75 PTS<br>
                         🏖️ UMBRELLA = -100 PTS<br>
                         🦈 SHARK = -1 LIFE
                     </p>
-                    <p style="color: #f00; font-size: 9px; margin-top: 10px;">
+                    <p style="color: #f00; font-size: clamp(7px, 1.8vw, 9px); margin-top: 10px;">
                         MIN SCORE: -500
                     </p>
                 </div>
             </div>
             
-            <p style="color: #0ff; font-size: 10px; margin: 20px 0;">
-                USE ARROW KEYS OR WASD TO MOVE<br>
+            <p style="color: #0ff; font-size: clamp(8px, 2vw, 10px); margin: 10px 0;">
+                SWIPE OR USE ARROWS TO MOVE<br>
                 SCORE 3000+ FOR MYSTERY PRIZE!
             </p>
             
             <button class="btn" onclick="startGame()">INSERT COIN</button>
-            <p class="blink" style="margin-top: 2rem; color: #f0f;">PRESS SPACE TO START</p>
+            <p class="blink" style="margin-top: 1rem; color: #f0f;">TAP TO START</p>
         </div>
         
         <!-- Game UI -->
@@ -271,12 +326,22 @@
         <!-- Game Canvas -->
         <canvas id="gameCanvas"></canvas>
         
+        <!-- Mobile Controls -->
+        <div id="mobileControls">
+            <div class="control-pad">
+                <div class="control-btn control-up" data-direction="up">↑</div>
+                <div class="control-btn control-down" data-direction="down">↓</div>
+                <div class="control-btn control-left" data-direction="left">←</div>
+                <div class="control-btn control-right" data-direction="right">→</div>
+            </div>
+        </div>
+        
         <!-- Transition Screen -->
         <div id="transitionScreen" style="display: none;">
             <h1 id="transitionTitle">LEVEL COMPLETE!</h1>
-            <div id="transitionCharacter" style="font-size: 120px; margin: 20px 0;"></div>
-            <p class="arcade-text" id="transitionMessage" style="font-size: 14px; color: #0ff; line-height: 1.8;"></p>
-            <p style="color: #ff0; font-size: 16px; margin-top: 20px;">GET READY...</p>
+            <div id="transitionCharacter" style="font-size: clamp(80px, 15vw, 120px); margin: 20px 0;"></div>
+            <p class="arcade-text" id="transitionMessage" style="font-size: clamp(12px, 3vw, 14px); color: #0ff; line-height: 1.8;"></p>
+            <p style="color: #ff0; font-size: clamp(14px, 3.5vw, 16px); margin-top: 20px;">GET READY...</p>
         </div>
         
         <!-- Game Over Screen -->
@@ -285,8 +350,8 @@
             <p id="finalScore" class="arcade-text">FINAL SCORE: 00000</p>
             
             <div id="leaderboardSection" style="margin: 20px 0;">
-                <p style="color: #ff0; font-size: 14px; margin-bottom: 10px;">HIGH SCORES</p>
-                <div id="leaderboardList" style="color: #0ff; font-size: 10px; line-height: 1.8;"></div>
+                <p style="color: #ff0; font-size: clamp(12px, 3vw, 14px); margin-bottom: 10px;">HIGH SCORES</p>
+                <div id="leaderboardList" style="color: #0ff; font-size: clamp(8px, 2vw, 10px); line-height: 1.8;"></div>
             </div>
             
             <button class="btn" onclick="restartGame()">TRY AGAIN</button>
@@ -294,14 +359,33 @@
         
         <!-- Prize Screen -->
         <div id="prizeScreen" style="display: none;">
-            <h1>CHAMPION!</h1>
-            <p class="arcade-text">YOU SCORED 1000+ POINTS!<br>CLAIM YOUR FREE ALOHA HENRY HAT!</p>
-            <form id="prizeForm" onsubmit="submitPrize(event)">
-                <input type="text" placeholder="NAME" required maxlength="20">
-                <input type="email" placeholder="EMAIL" required>
-                <input type="text" placeholder="SHIPPING ADDRESS" required>
-                <button type="submit" class="btn">CLAIM HAT!</button>
-            </form>
+            <h1>🏆 CHAMPION! 🏆</h1>
+            <p class="arcade-text" style="font-size: clamp(14px, 3.5vw, 16px); color: #ff0; margin: 20px 0;">YOU SCORED <span id="finalPrizeScore">0</span> POINTS!</p>
+            <p class="arcade-text">YOU QUALIFIED FOR AN ALOHA HENRY MYSTERY PRIZE!</p>
+            
+            <div style="background: rgba(0, 255, 0, 0.2); border: 2px solid #0f0; padding: 20px; margin: 20px; border-radius: 10px;">
+                <p style="color: #0f0; font-size: clamp(10px, 2.5vw, 12px); margin-bottom: 10px;">YOUR WINNER CODE:</p>
+                <p id="prizeCode" style="color: #fff; font-size: clamp(16px, 4vw, 20px); letter-spacing: 2px;">KAI-XXXXX</p>
+                <p style="color: #ff0; font-size: clamp(7px, 1.8vw, 9px); margin-top: 10px;">SCREENSHOT THIS CODE!</p>
+            </div>
+            
+            <div style="margin: 20px;">
+                <p style="color: #0ff; font-size: clamp(9px, 2.2vw, 11px); line-height: 1.8;">
+                    🎁 MYSTERY PRIZES INCLUDE:<br>
+                    ALOHA HENRY HATS • KOOZIES • STICKERS<br>
+                    AND OTHER SURPRISES!
+                </p>
+            </div>
+            
+            <div style="margin: 30px 0;">
+                <button class="btn" onclick="copyCode()" style="margin-bottom: 10px;">COPY CODE</button>
+                <br>
+                <button class="btn" onclick="location.reload()" style="background: #666;">PLAY AGAIN</button>
+            </div>
+            
+            <p style="color: #ff0; font-size: clamp(8px, 2vw, 10px); margin-top: 20px;">
+                PRIZES COMING SOON! WE'LL EMAIL WINNERS!
+            </p>
         </div>
     </div>
     
@@ -310,12 +394,14 @@
         const ctx = canvas.getContext('2d');
         const gameContainer = document.getElementById('gameContainer');
         
-        // Set canvas size
+        // Set canvas size based on container
         function resizeCanvas() {
-            canvas.width = 800;
-            canvas.height = 600;
+            const rect = gameContainer.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
         }
         resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
         
         // Game variables
         let gameRunning = false;
@@ -324,22 +410,21 @@
         try {
             highScore = localStorage.getItem('kaiHighScore') || 0;
         } catch (e) {
-            // localStorage not available in sandboxed environment
             highScore = 0;
         }
         let lives = 3;
         let currentLevel = 1;
         let frameCount = 0;
-        let hatQualified = false; // Track if they've qualified for hat
+        let hatQualified = false;
         
-        // Game objects
+        // Game objects with mobile-friendly sizes
         const kai = {
-            x: 400,
-            y: 500,
+            x: 0,
+            y: 0,
             width: 40,
             height: 40,
             speed: 4,
-            size: 1, // Size multiplier for power-ups
+            size: 1,
             sizeTimer: 0,
             invulnerable: false,
             invulnerableTime: 0,
@@ -348,6 +433,12 @@
             sharkEater: false,
             sharkEaterTime: 0
         };
+        
+        // Initialize Kai position after canvas is sized
+        function initKaiPosition() {
+            kai.x = canvas.width / 2;
+            kai.y = canvas.height - 100;
+        }
         
         let items = [];
         let obstacles = [];
@@ -369,38 +460,48 @@
         let lastObstacleSpawn = 0;
         let lastSharkSpawn = 0;
         
-        // Levels configuration - Balanced for fun!
+        // Levels configuration
         const levels = {
             1: { 
                 name: 'POIPU', 
-                bgColor: '#1a4d66',  // Brighter blue
-                itemRate: 1500,      // More coconuts!
-                obstacleRate: 4000,  // Fewer obstacles
-                sharkRate: 12000,    // Rare sharks
+                bgColor: '#1a4d66',
+                itemRate: 1500,
+                obstacleRate: 4000,
+                sharkRate: 12000,
                 speed: 2,
-                powerUpSpeed: 1      // Slow power-ups
+                powerUpSpeed: 1
             },
             2: { 
                 name: 'KEALIA', 
-                bgColor: '#0d3d56',  // Medium blue
-                itemRate: 1200,      // Good coconut rate
-                obstacleRate: 3000,  // Moderate obstacles
-                sharkRate: 8000,     // Occasional sharks
+                bgColor: '#0d3d56',
+                itemRate: 1200,
+                obstacleRate: 3000,
+                sharkRate: 8000,
                 speed: 3,
                 powerUpSpeed: 1.5
             },
             3: { 
                 name: 'HANALEI STORM', 
-                bgColor: '#002d44',  // Darker blue
-                itemRate: 1000,      // Still good coconuts
-                obstacleRate: 2500,  // Challenging but fair
-                sharkRate: 6000,     // More sharks but manageable
-                speed: 3.5,          // Not too fast
+                bgColor: '#002d44',
+                itemRate: 1000,
+                obstacleRate: 2500,
+                sharkRate: 6000,
+                speed: 3.5,
                 powerUpSpeed: 2
             }
         };
         
-        // Input handling
+        // Touch controls
+        let touchStartX = null;
+        let touchStartY = null;
+        let virtualKeys = {
+            ArrowUp: false,
+            ArrowDown: false,
+            ArrowLeft: false,
+            ArrowRight: false
+        };
+        
+        // Desktop keyboard
         const keys = {};
         document.addEventListener('keydown', (e) => {
             keys[e.key] = true;
@@ -410,45 +511,73 @@
         });
         document.addEventListener('keyup', (e) => keys[e.key] = false);
         
-        // Touch controls
-        let touchX = null;
-        let touchY = null;
+        // Mobile button controls
+        document.querySelectorAll('.control-btn').forEach(btn => {
+            btn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                const direction = btn.dataset.direction;
+                if (direction === 'up') virtualKeys.ArrowUp = true;
+                if (direction === 'down') virtualKeys.ArrowDown = true;
+                if (direction === 'left') virtualKeys.ArrowLeft = true;
+                if (direction === 'right') virtualKeys.ArrowRight = true;
+            });
+            
+            btn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                const direction = btn.dataset.direction;
+                if (direction === 'up') virtualKeys.ArrowUp = false;
+                if (direction === 'down') virtualKeys.ArrowDown = false;
+                if (direction === 'left') virtualKeys.ArrowLeft = false;
+                if (direction === 'right') virtualKeys.ArrowRight = false;
+            });
+        });
+        
+        // Touch swipe controls
         canvas.addEventListener('touchstart', (e) => {
-            touchX = e.touches[0].clientX;
-            touchY = e.touches[0].clientY;
+            e.preventDefault();
+            touchStartX = e.touches[0].clientX;
+            touchStartY = e.touches[0].clientY;
         });
         
         canvas.addEventListener('touchmove', (e) => {
-            if (touchX !== null && touchY !== null) {
-                const currentX = e.touches[0].clientX;
-                const currentY = e.touches[0].clientY;
-                const diffX = currentX - touchX;
-                const diffY = currentY - touchY;
-                
-                kai.x += diffX * 0.5;
-                kai.y += diffY * 0.5;
-                kai.x = Math.max(16, Math.min(canvas.width - 16, kai.x));
-                kai.y = Math.max(16, Math.min(canvas.height - 16, kai.y));
-                
-                touchX = currentX;
-                touchY = currentY;
-            }
+            e.preventDefault();
+            if (touchStartX === null || touchStartY === null) return;
+            
+            const touchX = e.touches[0].clientX;
+            const touchY = e.touches[0].clientY;
+            const diffX = touchX - touchStartX;
+            const diffY = touchY - touchStartY;
+            
+            // Direct movement based on swipe
+            kai.x += diffX * 0.3;
+            kai.y += diffY * 0.3;
+            
+            // Keep in bounds
+            kai.x = Math.max(20, Math.min(canvas.width - 20, kai.x));
+            kai.y = Math.max(20, Math.min(canvas.height - 20, kai.y));
+            
+            touchStartX = touchX;
+            touchStartY = touchY;
         });
         
-        canvas.addEventListener('touchend', () => {
-            touchX = null;
-            touchY = null;
+        canvas.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            touchStartX = null;
+            touchStartY = null;
         });
+        
+        // Tap to start on mobile
+        document.getElementById('startScreen').addEventListener('click', startGame);
         
         // Drawing functions
         function drawEmoji(emoji, x, y, size = 1) {
             ctx.save();
-            ctx.font = `${50 * size}px Arial`;  // Bigger base size!
+            const baseSize = Math.min(canvas.width, canvas.height) / 15;
+            ctx.font = `${baseSize * size}px Arial`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            ctx.fillStyle = '#FFFFFF';  // Force white color
+            ctx.fillStyle = '#FFFFFF';
             
-            // Add glow effect for power-ups
             if (size > 1) {
                 ctx.shadowColor = '#FFD700';
                 ctx.shadowBlur = 20;
@@ -459,12 +588,10 @@
         }
         
         function drawKai() {
-            // Flash when invulnerable
             if (kai.invulnerable && Math.floor(Date.now() / 100) % 2) {
                 ctx.globalAlpha = 0.5;
             }
             
-            // Golden glow when shark eater
             if (kai.sharkEater) {
                 ctx.save();
                 ctx.shadowColor = '#FFD700';
@@ -472,7 +599,6 @@
                 drawEmoji('🏄‍♀️', kai.x, kai.y, kai.size);
                 ctx.restore();
                 
-                // Mouth animation
                 if (Math.floor(Date.now() / 200) % 2) {
                     ctx.font = '20px Arial';
                     ctx.fillText('😋', kai.x + 20, kai.y - 20);
@@ -482,6 +608,36 @@
             }
             
             ctx.globalAlpha = 1;
+        }
+        
+        function copyCode() {
+            const code = document.getElementById('prizeCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'COPIED!';
+                btn.style.background = '#0f0';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '#f00';
+                }, 2000);
+            }).catch(() => {
+                alert('Code: ' + code + '\nPlease write this down!');
+            });
+        }
+        
+        function generatePrizeCode(score, name) {
+            const timestamp = Date.now();
+            const baseCode = `${name}${score}${timestamp}`;
+            
+            let hash = 0;
+            for (let i = 0; i < baseCode.length; i++) {
+                hash = ((hash << 5) - hash) + baseCode.charCodeAt(i);
+                hash = hash & hash;
+            }
+            
+            const code = Math.abs(hash).toString(36).toUpperCase().slice(0, 6);
+            return `KAI-${code}`;
         }
         
         function createParticles(x, y, color, count) {
@@ -497,8 +653,17 @@
             }
         }
         
+        function showMessage(text, x, y) {
+            const msg = document.createElement('div');
+            msg.className = 'message';
+            msg.textContent = text;
+            msg.style.left = x + 'px';
+            msg.style.top = y + 'px';
+            gameContainer.appendChild(msg);
+            setTimeout(() => msg.remove(), 2000);
+        }
+        
         function showHatNotification() {
-            // Create epic notification
             const notification = document.createElement('div');
             notification.style.cssText = `
                 position: absolute;
@@ -510,7 +675,7 @@
                 padding: 30px;
                 border-radius: 20px;
                 font-family: 'Press Start 2P', monospace;
-                font-size: 16px;
+                font-size: clamp(12px, 3vw, 16px);
                 text-align: center;
                 z-index: 200;
                 box-shadow: 0 0 50px rgba(255, 215, 0, 0.8);
@@ -518,21 +683,19 @@
             `;
             notification.innerHTML = `
                 <h2 style="color: #f00; margin-bottom: 20px;">🎩 HAT QUALIFIED! 🎩</h2>
-                <p style="font-size: 12px; line-height: 1.8;">You've earned an<br>ALOHA HENRY MYSTERY PRIZE!</p>
-                <p style="font-size: 10px; margin-top: 15px; color: #0066cc;">Keep playing for the HIGH SCORE!</p>
-                <p style="font-size: 8px; margin-top: 10px;">Claim hat after game over</p>
+                <p style="font-size: clamp(10px, 2.5vw, 12px); line-height: 1.8;">You've earned an<br>ALOHA HENRY MYSTERY PRIZE!</p>
+                <p style="font-size: clamp(8px, 2vw, 10px); margin-top: 15px; color: #0066cc;">Keep playing for the HIGH SCORE!</p>
+                <p style="font-size: clamp(6px, 1.5vw, 8px); margin-top: 10px;">Claim hat after game over</p>
             `;
             
             gameContainer.appendChild(notification);
             
-            // Remove after 2 seconds (was 5)
             setTimeout(() => {
                 notification.style.transition = 'opacity 0.5s';
                 notification.style.opacity = '0';
                 setTimeout(() => notification.remove(), 500);
             }, 2000);
             
-            // Epic particle celebration
             for (let i = 0; i < 50; i++) {
                 setTimeout(() => {
                     createParticles(
@@ -545,21 +708,14 @@
             }
         }
         
-        function showMessage(text, x, y) {
-            const msg = document.createElement('div');
-            msg.className = 'message';
-            msg.textContent = text;
-            msg.style.left = x + 'px';
-            msg.style.top = y + 'px';
-            gameContainer.appendChild(msg);
-            setTimeout(() => msg.remove(), 2000);
-        }
-        
         function startGame() {
             document.getElementById('startScreen').style.display = 'none';
             document.getElementById('gameUI').style.display = 'block';
             document.getElementById('highScore').style.display = 'block';
             canvas.style.display = 'block';
+            
+            resizeCanvas();
+            initKaiPosition();
             
             gameRunning = true;
             score = 0;
@@ -570,8 +726,6 @@
             obstacles = [];
             sharks = [];
             particles = [];
-            kai.x = 400;
-            kai.y = 500;
             kai.size = 1;
             kai.invulnerable = false;
             kai.superSpamActive = false;
@@ -582,24 +736,25 @@
         }
         
         function updateKai() {
-            if (keys['ArrowLeft'] || keys['a'] || keys['A']) {
+            // Combine real keys and virtual keys
+            const allKeys = { ...keys, ...virtualKeys };
+            
+            if (allKeys['ArrowLeft'] || allKeys['a'] || allKeys['A']) {
                 kai.x -= kai.speed;
             }
-            if (keys['ArrowRight'] || keys['d'] || keys['D']) {
+            if (allKeys['ArrowRight'] || allKeys['d'] || allKeys['D']) {
                 kai.x += kai.speed;
             }
-            if (keys['ArrowUp'] || keys['w'] || keys['W']) {
+            if (allKeys['ArrowUp'] || allKeys['w'] || allKeys['W']) {
                 kai.y -= kai.speed;
             }
-            if (keys['ArrowDown'] || keys['s'] || keys['S']) {
+            if (allKeys['ArrowDown'] || allKeys['s'] || allKeys['S']) {
                 kai.y += kai.speed;
             }
             
-            // Keep Kai in bounds
-            kai.x = Math.max(16, Math.min(canvas.width - 16, kai.x));
-            kai.y = Math.max(16, Math.min(canvas.height - 16, kai.y));
+            kai.x = Math.max(20, Math.min(canvas.width - 20, kai.x));
+            kai.y = Math.max(20, Math.min(canvas.height - 20, kai.y));
             
-            // Update invulnerability and power-ups
             if (kai.invulnerable && !kai.superSpamActive && Date.now() - kai.invulnerableTime > 2000) {
                 kai.invulnerable = false;
             }
@@ -625,7 +780,7 @@
                 let type;
                 
                 if (rand < 0.02) {
-                    type = 'goldenChicken';  // NEW: Golden Chicken - ULTRA RARE!
+                    type = 'goldenChicken';
                 } else if (rand < 0.05) {
                     type = 'spam';
                 } else if (rand < 0.1) {
@@ -644,7 +799,7 @@
                     'ahi': '🐟',
                     'spam': '🍖',
                     'shaveIce': '🧊',
-                    'goldenChicken': '🐔'  // Will add golden glow effect
+                    'goldenChicken': '🐔'
                 };
                 
                 items.push({
@@ -703,7 +858,6 @@
             items = items.filter(item => {
                 item.y += item.speed;
                 
-                // Check collision with Kai
                 if (checkCollision(kai, item)) {
                     if (item.type === 'coconut') {
                         score += 50;
@@ -730,7 +884,6 @@
                         showMessage('SUPER SPAM! +500 INVINCIBLE!', item.x, item.y);
                     } else if (item.type === 'shaveIce') {
                         score += 150;
-                        // Freeze time effect - slow everything down
                         levels[currentLevel].speed *= 0.5;
                         setTimeout(() => {
                             levels[currentLevel].speed *= 2;
@@ -741,7 +894,7 @@
                         score += 1000;
                         kai.sharkEater = true;
                         kai.sharkEaterTime = Date.now();
-                        kai.size = 2; // Get HUGE!
+                        kai.size = 2;
                         kai.sizeTimer = Date.now();
                         createParticles(item.x, item.y, '#FFD700', 30);
                         showMessage('GOLDEN CHICKEN! +1000 EAT SHARKS!', item.x, item.y);
@@ -749,7 +902,6 @@
                     
                     updateUI();
                     
-                    // Check level progression
                     if (score >= 1000 && currentLevel === 1) {
                         levelTransition(2);
                     } else if (score >= 2000 && currentLevel === 2) {
@@ -767,17 +919,15 @@
             obstacles = obstacles.filter(obstacle => {
                 obstacle.y += obstacle.speed;
                 
-                // Check collision with Kai
                 if (checkCollision(kai, obstacle)) {
                     if (kai.superSpamActive) {
-                        // Invincible - destroy obstacle!
                         createParticles(obstacle.x, obstacle.y, '#FFD700', 10);
                         return false;
                     }
                     
                     if (obstacle.type === 'chicken') {
                         score -= 50;
-                        score = Math.max(-500, score); // Limit negative to -500
+                        score = Math.max(-500, score);
                         createParticles(obstacle.x, obstacle.y, '#FF0000', 5);
                         showMessage('-50 CHICKEN!', obstacle.x, obstacle.y);
                     } else if (obstacle.type === 'umbrella') {
@@ -802,31 +952,25 @@
         
         function updateSharks() {
             sharks = sharks.filter(shark => {
-                // Calculate distance to Kai
                 const dx = kai.x - shark.x;
                 const dy = kai.y - shark.y;
                 const distance = Math.sqrt(dx * dx + dy * dy);
                 
-                // Start chasing if close enough
                 if (distance < 150 && !shark.chasing) {
                     shark.chasing = true;
                     shark.chaseTime = Date.now();
                     showMessage('SHARK!', shark.x, shark.y);
                 }
                 
-                // Move shark
                 if (shark.chasing) {
-                    // Chase Kai
                     const angle = Math.atan2(dy, dx);
                     shark.x += Math.cos(angle) * shark.speed * 2;
                     shark.y += Math.sin(angle) * shark.speed * 2;
                     
-                    // Stop chasing after 3 seconds
                     if (Date.now() - shark.chaseTime > 3000) {
                         shark.chasing = false;
                     }
                 } else {
-                    // Normal movement
                     if (shark.x < canvas.width / 2) {
                         shark.x += shark.speed;
                     } else {
@@ -834,10 +978,8 @@
                     }
                 }
                 
-                // Check collision with Kai
                 if (checkCollision(kai, shark)) {
                     if (kai.sharkEater) {
-                        // EAT THE SHARK!
                         score += 500;
                         createParticles(shark.x, shark.y, '#FF0000', 30);
                         showMessage('SHARK EATEN! +500', shark.x, shark.y);
@@ -858,7 +1000,6 @@
                     }
                 }
                 
-                // Remove if off screen
                 return shark.x > -100 && shark.x < canvas.width + 100;
             });
         }
@@ -867,7 +1008,7 @@
             particles = particles.filter(particle => {
                 particle.x += particle.vx;
                 particle.y += particle.vy;
-                particle.vy += 0.5; // Gravity
+                particle.vy += 0.5;
                 particle.life--;
                 
                 return particle.life > 0;
@@ -907,26 +1048,20 @@
                 updateUI();
                 gameRunning = true;
                 gameLoop();
-            }, 4000); // 4 second transition
+            }, 4000);
         }
         
         function draw() {
-            // Clear and draw background
             ctx.fillStyle = levels[currentLevel].bgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
             
-            // NO WAVES - keeping it clean!
-            
-            // Draw items with emojis
             items.forEach(item => {
-                // Golden chicken gets special treatment!
                 if (item.type === 'goldenChicken') {
                     ctx.save();
                     ctx.shadowColor = '#FFD700';
                     ctx.shadowBlur = 30 + Math.sin(frameCount * 0.2) * 10;
                     drawEmoji(item.emoji, item.x, item.y, 1.2);
                     
-                    // Extra sparkles
                     if (Math.random() < 0.8) {
                         ctx.fillStyle = '#FFD700';
                         for (let i = 0; i < 3; i++) {
@@ -943,16 +1078,13 @@
                 }
             });
             
-            // Draw obstacles with emojis
             obstacles.forEach(obstacle => {
                 drawEmoji(obstacle.emoji, obstacle.x, obstacle.y);
             });
             
-            // Draw sharks
             sharks.forEach(shark => {
                 const sharkSize = shark.chasing ? 1.5 : 1.2;
                 if (shark.chasing) {
-                    // Red glow for chasing sharks
                     ctx.save();
                     ctx.shadowColor = '#FF0000';
                     ctx.shadowBlur = 30;
@@ -963,7 +1095,6 @@
                 }
             });
             
-            // Draw particles
             particles.forEach(particle => {
                 ctx.save();
                 ctx.globalAlpha = particle.life / 30;
@@ -972,7 +1103,6 @@
                 ctx.restore();
             });
             
-            // Draw Kai last so she's on top
             drawKai();
             
             frameCount++;
@@ -998,7 +1128,6 @@
             updateParticles();
             draw();
             
-            // Check for hat qualification (but keep playing!)
             if (score >= 3000 && currentLevel === 3 && !hatQualified) {
                 hatQualified = true;
                 showHatNotification();
@@ -1010,33 +1139,24 @@
         function endGame() {
             gameRunning = false;
             
-            // Always ask for name first!
             const playerName = prompt('GAME OVER! Enter your initials for the leaderboard (3 letters):')?.slice(0, 3).toUpperCase() || 'AAA';
             
-            // Update high score
             if (score > highScore) {
                 highScore = score;
                 try {
                     localStorage.setItem('kaiHighScore', highScore);
-                } catch (e) {
-                    // localStorage not available in sandboxed environment
-                }
+                } catch (e) {}
             }
             
-            // Add to leaderboard
             leaderboard.push({ name: playerName, score: score });
             leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 10); // Keep top 10
+            leaderboard = leaderboard.slice(0, 10);
             
             try {
                 localStorage.setItem('kaiLeaderboard', JSON.stringify(leaderboard));
-            } catch (e) {
-                // localStorage not available
-            }
+            } catch (e) {}
             
-            // Check if they qualified for prize
             if (hatQualified || score >= 3000) {
-                // They get the prize screen!
                 document.getElementById('finalPrizeScore').textContent = score;
                 document.getElementById('prizeCode').textContent = generatePrizeCode(score, playerName);
                 
@@ -1045,7 +1165,6 @@
                 document.getElementById('highScore').style.display = 'none';
                 document.getElementById('prizeScreen').style.display = 'flex';
             } else {
-                // Regular game over with leaderboard
                 const leaderboardHTML = leaderboard.map((entry, i) => 
                     `${i + 1}. ${entry.name} - ${entry.score.toString().padStart(5, '0')}`
                 ).join('<br>');
@@ -1064,78 +1183,12 @@
             startGame();
         }
         
-        function copyCode() {
-            const code = document.getElementById('prizeCode').textContent;
-            navigator.clipboard.writeText(code).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'COPIED!';
-                btn.style.background = '#0f0';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '#f00';
-                }, 2000);
-            }).catch(() => {
-                alert('Code: ' + code + '\nPlease write this down!');
-            });
-        }
-        
-        function generatePrizeCode(score, name) {
-            // Generate unique code based on score, name, and timestamp
-            const timestamp = Date.now();
-            const baseCode = `${name}${score}${timestamp}`;
-            
-            // Simple hash function to create a 6-character code
-            let hash = 0;
-            for (let i = 0; i < baseCode.length; i++) {
-                hash = ((hash << 5) - hash) + baseCode.charCodeAt(i);
-                hash = hash & hash;
+        // Prevent scrolling on mobile
+        document.addEventListener('touchmove', (e) => {
+            if (e.target.closest('#gameCanvas')) {
+                e.preventDefault();
             }
-            
-            // Convert to alphanumeric code
-            const code = Math.abs(hash).toString(36).toUpperCase().slice(0, 6);
-            return `KAI-${code}`;
-        }
-        
-        function showPrizeScreen() {
-            gameRunning = false;
-            
-            if (score > highScore) {
-                highScore = score;
-                try {
-                    localStorage.setItem('kaiHighScore', highScore);
-                } catch (e) {
-                    // localStorage not available in sandboxed environment
-                }
-            }
-            
-            // Add to leaderboard first
-            const playerName = prompt('🏆 EPIC SCORE! Enter your name for the leaderboard (3 letters):')?.slice(0, 3).toUpperCase() || 'PRO';
-            leaderboard.push({ name: playerName, score: score });
-            leaderboard.sort((a, b) => b.score - a.score);
-            leaderboard = leaderboard.slice(0, 10);
-            
-            try {
-                localStorage.setItem('kaiLeaderboard', JSON.stringify(leaderboard));
-            } catch (e) {
-                // localStorage not available
-            }
-            
-            // Generate unique prize code
-            const prizeCode = generatePrizeCode(score, playerName);
-            
-            canvas.style.display = 'none';
-            document.getElementById('gameUI').style.display = 'none';
-            document.getElementById('highScore').style.display = 'none';
-            
-            // Update prize screen with final score and code
-            document.getElementById('finalPrizeScore').textContent = score;
-            document.getElementById('prizeCode').textContent = prizeCode;
-            
-            // Update the claim button URL (removed for now)
-            
-            document.getElementById('prizeScreen').style.display = 'flex';
-        }
+        }, { passive: false });
     </script>
 </body>
 </html>
